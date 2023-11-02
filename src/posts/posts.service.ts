@@ -1,4 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PostsModel } from './entities/posts.entity';
 
 export interface PostModel {
   id: number;
@@ -38,34 +41,60 @@ let posts: PostModel[] = [
 
 @Injectable()
 export class PostsService {
-  getAllPosts(): PostModel[] {
-    return posts;
+  constructor(
+    @InjectRepository(PostsModel)
+    private readonly postsRepository: Repository<PostsModel>,
+  ) {}
+  async getAllPosts() {
+    return this.postsRepository.find();
   }
 
-  getPostById(id: number): PostModel {
-    const post = posts.find((post) => post.id === +id);
-
+  async getPostById(id: number) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id,
+      },
+    });
     if (!post) {
       throw new NotFoundException();
     }
     return post;
   }
 
-  createPost(author: string, title: string, content: string): PostModel {
-    const post: PostModel = {
-      id: posts[posts.length - 1].id + 1,
+  async createPost(
+    author: string,
+    title: string,
+    content: string,
+  ): Promise<PostModel> {
+    const post = this.postsRepository.create({
       author,
       title,
       content,
       likeCount: 0,
       commentCount: 0,
-    };
-    posts = [...posts, post];
-    return post;
+    });
+
+    const newPost = await this.postsRepository.save(post);
+
+    return newPost;
   }
 
-  updatePost(postId: number, author: string, title: string, content: string) {
-    const post = posts.find((post) => post.id === postId);
+  async updatePost(
+    postId: number,
+    author: string,
+    title: string,
+    content: string,
+  ) {
+    //save의 기능
+    // 1) 만약에 데이터가 존재하지 않는다면 (id를 기준으로) 새로 생성한다.
+    // 2) 만약에 데이터가 존재한다면 (같은 id의 값이 존재한다면) 존재하던 값을 업데이트한다.
+
+    const post = await this.postsRepository.findOne({
+      where: {
+        id: postId,
+      },
+    });
+
     if (!post) {
       throw new NotFoundException();
     }
@@ -78,20 +107,21 @@ export class PostsService {
     if (content) {
       post.content = content;
     }
-    posts = posts.map((prePost) => (prePost.id === postId ? post : prePost));
-    return post;
+
+    const newPost = await this.postsRepository.save(post);
+    return newPost;
   }
 
-  deletePost(postId: number) {
-    const post = posts.find((post) => post.id === postId);
+  async deletePost(postId: number) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id: postId,
+      },
+    });
     if (!post) {
       throw new NotFoundException();
     }
-    posts = posts.filter((post) => post.id !== postId);
-
-    if (!posts) {
-      throw new NotFoundException();
-    }
+    this.postsRepository.delete(postId);
     return postId;
   }
 }
