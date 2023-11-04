@@ -8,8 +8,11 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
+import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -29,12 +32,14 @@ export class PostsController {
   // DefaultValuePipe는 값이 없을 때 기본값을 설정해준다.
   // 참고로 이는 네스트에서 인젝션을 해주는 것이 아닌 여기서 바로 인스턴스를 생성해주는 것이다.
   @Post()
+  @UseGuards(AccessTokenGuard)
   postPosts(
-    @Body('authorId') authorId: number,
+    @Request() req,
     @Body('title') title: string,
     @Body('content') content: string,
     // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
   ) {
+    const authorId = req.user.id;
     return this.postsService.createPost(authorId, title, content);
   }
 
