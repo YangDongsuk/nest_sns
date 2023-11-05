@@ -66,8 +66,28 @@ export class PostsService {
     }
   }
 
-  // 1) 오름차 순으로 정렬하는 pagination만 구현한다.
   async paginatePosts(dto: PaginatePostDto) {
+    if (dto.page) {
+      return this.pagePaginatePosts(dto);
+    } else {
+      return this.cursorPaginatePosts(dto);
+    }
+  }
+  async pagePaginatePosts(dto: PaginatePostDto) {
+    const [posts, count] = await this.postsRepository.findAndCount({
+      skip: dto.take * (dto.page - 1),
+      take: dto.take,
+      order: {
+        createdAt: dto.order__createdAt,
+      },
+    });
+    return {
+      data: posts,
+      total: count,
+    };
+  }
+
+  async cursorPaginatePosts(dto: PaginatePostDto) {
     // 정의로 계속 들어가서 타입 따오기
     const where: FindOptionsWhere<PostsModel> = {};
     if (dto.where__id_more_than) {
