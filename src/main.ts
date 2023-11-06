@@ -11,6 +11,8 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true, // true로 설정하면, 자동 형변환을 허용함
       },
+      whitelist: true, // 데코레이터가 없는 속성들은 제거해줌
+      forbidNonWhitelisted: true, // 데코레이터가 없는 속성이 있으면 요청 자체를 막아버림
     }),
   );
 
