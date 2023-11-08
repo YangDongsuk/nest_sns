@@ -51,15 +51,17 @@ export class PostsController {
   // 참고로 이는 네스트에서 인젝션을 해주는 것이 아닌 여기서 바로 인스턴스를 생성해주는 것이다.
   @Post()
   @UseGuards(AccessTokenGuard)
-  @UseInterceptors(FileInterceptor('image'))
-  postPosts(
+  // @UseInterceptors(FileInterceptor('image'))
+  async postPosts(
     @User('id') userId: number,
     @Body() body: CreatePostDto,
-    @UploadedFile() file?: Express.Multer.File,
+    // @UploadedFile() file?: Express.Multer.File,
 
     // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
   ) {
-    return this.postsService.createPost(userId, body, file?.filename);
+    await this.postsService.createPostImage(body);
+
+    return this.postsService.createPost(userId, body);
   }
 
   @Patch(':id')
