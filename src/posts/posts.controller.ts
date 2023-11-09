@@ -26,6 +26,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageModelType } from 'src/common/entity/image.entity';
 import { DataSource, In } from 'typeorm';
 import { PostsImagesService } from './image/images.service';
+import { LogInterceptor } from 'src/common/interceptor/log.interceptor';
 
 @Controller('posts')
 export class PostsController {
@@ -36,6 +37,7 @@ export class PostsController {
   ) {}
 
   @Get()
+  @UseInterceptors(LogInterceptor)
   getPosts(@Query() query: PaginatePostDto) {
     // return this.postsService.getAllPosts();
     return this.postsService.paginatePosts(query);
