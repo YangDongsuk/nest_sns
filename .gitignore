@@ -39,3 +39,7 @@ docker-compose.yaml
 /postgres-data
 
 .env
+
+# public
+/public/posts/*
+/public/temp/*
