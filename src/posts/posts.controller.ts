@@ -1,9 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   DefaultValuePipe,
   Delete,
   Get,
+  HttpException,
   InternalServerErrorException,
   Param,
   ParseIntPipe,
@@ -12,6 +14,7 @@ import {
   Query,
   Request,
   UploadedFile,
+  UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -28,6 +31,7 @@ import { PostsImagesService } from './image/images.service';
 import { LogInterceptor } from 'src/common/interceptor/log.interceptor';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
+import { HttpExceptionFilter } from 'src/common/exception-filter/http.exception-filter';
 
 @Controller('posts')
 export class PostsController {
@@ -39,8 +43,10 @@ export class PostsController {
 
   @Get()
   @UseInterceptors(LogInterceptor)
+  // @UseFilters(HttpExceptionFilter)
   getPosts(@Query() query: PaginatePostDto) {
     // return this.postsService.getAllPosts();
+    // throw new BadRequestException('에러 발생');
     return this.postsService.paginatePosts(query);
   }
 
