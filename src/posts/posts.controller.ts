@@ -42,7 +42,7 @@ export class PostsController {
   ) {}
 
   @Get()
-  @UseInterceptors(LogInterceptor)
+  // @UseInterceptors(LogInterceptor)
   // @UseFilters(HttpExceptionFilter)
   getPosts(@Query() query: PaginatePostDto) {
     // return this.postsService.getAllPosts();
