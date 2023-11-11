@@ -2,6 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -19,6 +21,8 @@ import { lengthValidationMessage } from 'src/common/validation-message/length-va
 import { stringValidationMessage } from 'src/common/validation-message/string-validation.message';
 import { emailValidationMessage } from 'src/common/validation-message/email-validation.message';
 import { Exclude, Expose } from 'class-transformer';
+import { ChatsModel } from 'src/chats/entity/chats.entity';
+import { MessagesModel } from 'src/chats/messages/entity/messeges.entity';
 
 @Entity()
 // 만약에 이게 보안상의 이유로 노출되면 안되는 정보라면
@@ -89,4 +93,11 @@ export class UsersModel extends BaseModel {
 
   @OneToMany(() => PostsModel, (post) => post.author)
   posts: PostsModel[];
+
+  @ManyToMany(() => ChatsModel, (chat) => chat.users)
+  @JoinTable() // 두 모델중 하나에만 붙여주면 된다.
+  chats: ChatsModel[];
+
+  @OneToMany(() => MessagesModel, (message) => message.author)
+  messages: MessagesModel;
 }
