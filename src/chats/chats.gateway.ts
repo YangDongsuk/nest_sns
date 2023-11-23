@@ -59,31 +59,31 @@ export class ChatsGateway
   async handleConnection(socket: Socket & { user: UsersModel }) {
     console.log(`on connection ${socket.id}`);
 
-    const headers = socket.handshake.headers;
+    // const headers = socket.handshake.headers;
 
-    // Bearer xxxx
-    const rawToken = headers['authorization'];
+    // // Bearer xxxx
+    // const rawToken = headers['authorization'];
 
-    if (!rawToken) {
-      //   throw new WsException('토큰이 없습니다.');
-      socket.disconnect();
-    }
-    try {
-      const token = this.authService.extractTokenFromHeader(rawToken, true);
+    // if (!rawToken) {
+    //   //   throw new WsException('토큰이 없습니다.');
+    //   socket.disconnect();
+    // }
+    // try {
+    //   const token = this.authService.extractTokenFromHeader(rawToken, true);
 
-      const payload = this.authService.verifyToken(token);
+    //   const payload = this.authService.verifyToken(token);
 
-      const user = await this.usersService.getUserByEmail(payload.email);
+    //   const user = await this.usersService.getUserByEmail(payload.email);
 
-      socket.user = user;
+    //   socket.user = user;
 
-      return true;
-    } catch (error) {
-      console.log(error);
-      // 기존 에러는 http 에러이기 때문에 ws 에러로 바꿔줘야함
-      //   throw new WsException('토큰이 유효하지 않습니다.');
-      socket.disconnect();
-    }
+    //   return true;
+    // } catch (error) {
+    //   console.log(error);
+    //   // 기존 에러는 http 에러이기 때문에 ws 에러로 바꿔줘야함
+    //   //   throw new WsException('토큰이 유효하지 않습니다.');
+    //   socket.disconnect();
+    // }
   }
 
   @SubscribeMessage('enter_chat')
